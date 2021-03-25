@@ -1,9 +1,9 @@
 import os
-from training import Training
-from account import Account
-from users import Users
-from groups import Groups
-from phishing import Phishing
+from .training import Training
+from .account import Account
+from .users import Users
+from .groups import Groups
+from .phishing import Phishing
 
 
 class KB4:

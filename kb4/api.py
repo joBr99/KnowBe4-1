@@ -1,7 +1,7 @@
 import os
 import time
 import requests
-from exceptions import AuthorizationError
+from .exceptions import AuthorizationError
 
 
 class API:
