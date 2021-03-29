@@ -1,7 +1,7 @@
 import os
 import time
 import requests
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, asdict
 from .exceptions import AuthorizationError
 
 
@@ -113,7 +113,19 @@ class API:
 
 
 @dataclass()
-class Group:
+class Datacls:
+    pass
+
+    @classmethod
+    def from_dict(cls, obj):
+        return cls(**obj)
+
+    def to_dict(self):
+        return asdict(self)
+
+
+@dataclass()
+class Group(Datacls):
     id: int
     name: str
     group_type: str
@@ -123,22 +135,9 @@ class Group:
     risk_score_history: list
     status: str
 
-    @classmethod
-    def from_json(cls, obj):
-        return cls(
-            id=obj.get('id'),
-            name=obj.get('name'),
-            group_type=obj.get('group_type'),
-            adi_guid=obj.get('adi_guid'),
-            member_count=obj.get('member_count'),
-            current_risk_score=obj.get('current_risk_score'),
-            risk_score_history=obj.get('risk_score_history'),
-            status=obj.get('status')
-            )
-
 
 @dataclass()
-class TrainingEnrollment:
+class TrainingEnrollment(Datacls):
     campaign_name: str
     completion_date: str
     content_type: str
@@ -166,26 +165,9 @@ class TrainingEnrollment:
             self.status = "Not Started"
         return self.status
 
-    @classmethod
-    def from_json(cls, obj):
-        return cls(
-            campaign_name=obj.get('campaign_name'),
-            completion_date=obj.get('completion_date'),
-            content_type=obj.get('content_type'),
-            enrollment_date=obj.get('enrollment_date'),
-            enrollment_id=obj.get('enrollment_id'),
-            module_name=obj.get('module_name'),
-            policy_acknowledged=obj.get('policy_acknowledged'),
-            start_date=obj.get('start_date'),
-            status=obj.get('status'),
-            time_spent=obj.get('time_spent'),
-            employee_upn=obj.get('user').get('email'),
-            employee_id=obj.get('user').get('id')
-            )
-
 
 @dataclass()
-class StorePurchase:
+class StorePurchase(Datacls):
     store_purchase_id: int
     content_type: str
     name: str
@@ -199,26 +181,9 @@ class StorePurchase:
     purchase_date: str
     policy_url: str
 
-    @classmethod
-    def from_json(cls, obj):
-        return cls(
-            store_purchase_id=obj.get('store_purchase_id'),
-            content_type=obj.get('content_type'),
-            name=obj.get('name'),
-            description=obj.get('description'),
-            type=obj.get('type'),
-            duration=obj.get('duration'),
-            retired=obj.get('retired'),
-            retirement_date=obj.get('retirement_date'),
-            published_date=obj.get('published_date'),
-            publisher=obj.get('publisher'),
-            purchase_date=obj.get('purchase_date'),
-            policy_url=obj.get('policy_url')
-            )
-
 
 @dataclass()
-class Policy:
+class Policy(Datacls):
     id: int
     content_type: str
     name: str
@@ -226,20 +191,9 @@ class Policy:
     default_language: str
     status: int
 
-    @classmethod
-    def from_json(cls, obj):
-        return cls(
-            id=obj.get('id'),
-            content_type=obj.get('content_type'),
-            name=obj.get('name'),
-            minimum_time=obj.get('minimum_time'),
-            default_language=obj.get('default_language'),
-            status=obj.get('status')
-            )
-
 
 @dataclass()
-class TrainingCampaign:
+class TrainingCampaign(Datacls):
     campaign_id: int
     name: str
     groups: list = field(init=True)
@@ -271,7 +225,7 @@ class TrainingCampaign:
                     groups.append(API.GROUP_CACHE[group])
                 else:
                     if group != 0:
-                        group_obj = Group.from_json(api.request(method="GET", url=f'groups/{group_id}')[0])
+                        group_obj = Group.from_dict(api.request(method="GET", url=f'groups/{group_id}')[0])
                         groups.append(group_obj)
                         API.GROUP_CACHE[group_id] = group_obj
                     else:
@@ -282,34 +236,16 @@ class TrainingCampaign:
                     groups.append(API.GROUP_CACHE[group_id])
                 else:
                     if group_id != 0:
-                        group_obj = Group.from_json(api.request(method="GET", url=f'groups/{group_id}')[0])
+                        group_obj = Group.from_dict(api.request(method="GET", url=f'groups/{group_id}')[0])
                         groups.append(group_obj)
                         API.GROUP_CACHE[group_id] = group_obj
                     else:
                         pass
         return groups
 
-    @classmethod
-    def from_json(cls, obj):
-        return cls(
-            campaign_id=obj.get('campaign_id'),
-            name=obj.get('name'),
-            groups=obj.get('groups'),
-            status=obj.get('status'),
-            modules=obj.get('modules'),
-            content=obj.get('content'),
-            duration_type=obj.get('duration_type'),
-            start_date=obj.get('start_date'),
-            end_date=obj.get('end_date'),
-            relative_duration=obj.get('relative_duration'),
-            auto_enroll=obj.get('auto_enroll'),
-            allow_multiple_enrollments=obj.get('allow_multiple_enrollments'),
-            completion_percentage=obj.get('completion_percentage')
-            )
-
 
 @dataclass()
-class User:
+class User(Datacls):
     id: int
     employee_number: int
     first_name: str
@@ -363,7 +299,7 @@ class User:
                     groups.append(API.GROUP_CACHE[group])
                 else:
                     if group != 0:
-                        group_obj = Group.from_json(api.request(method="GET", url=f'groups/{group_id}')[0])
+                        group_obj = Group.from_dict(api.request(method="GET", url=f'groups/{group_id}')[0])
                         groups.append(group_obj)
                         API.GROUP_CACHE[group_id] = group_obj
                     else:
@@ -374,56 +310,16 @@ class User:
                     groups.append(API.GROUP_CACHE[group_id])
                 else:
                     if group_id != 0:
-                        group_obj = Group.from_json(api.request(method="GET", url=f'groups/{group_id}')[0])
+                        group_obj = Group.from_dict(api.request(method="GET", url=f'groups/{group_id}')[0])
                         groups.append(group_obj)
                         API.GROUP_CACHE[group_id] = group_obj
                     else:
                         pass
         return groups
 
-    @classmethod
-    def from_json(cls, obj):
-        return cls(
-            id=obj.get('id'),
-            employee_number=obj.get('employee_number'),
-            first_name=obj.get('first_name'),
-            last_name=obj.get('last_name'),
-            job_title=obj.get('job_title'),
-            email=obj.get('email'),
-            phish_prone_percentage=obj.get('phish_prone_percentage'),
-            phone_number=obj.get('phone_number'),
-            extension=obj.get('extension'),
-            mobile_phone_number=obj.get('mobile_phone_number'),
-            location=obj.get('location'),
-            division=obj.get('division'),
-            manager_name=obj.get('manager_name'),
-            manager_email=obj.get('manager_email'),
-            adi_manageable=obj.get('adi_manageable'),
-            adi_guid=obj.get('adi_guid'),
-            groups=obj.get('groups'),
-            current_risk_score=obj.get('current_risk_score'),
-            risk_score_history=obj.get('risk_score_history'),
-            aliases=obj.get('aliases'),
-            joined_on=obj.get('joined_on'),
-            last_sign_in=obj.get('last_sign_in'),
-            status=obj.get('status'),
-            organization=obj.get('organization'),
-            department=obj.get('department'),
-            language=obj.get('language'),
-            comment=obj.get('comment'),
-            employee_start_date=obj.get('employee_start_date'),
-            archived_at=obj.get('archived_at'),
-            custom_field_1=obj.get('custom_field_1'),
-            custom_field_2=obj.get('custom_field_2'),
-            custom_field_3=obj.get('custom_field_3'),
-            custom_field_4=obj.get('custom_field_4'),
-            custom_date_1=obj.get('custom_date_1'),
-            custom_date_2=obj.get('custom_date_2'),
-            )
-
 
 @dataclass()
-class PhishingSecurityTest:
+class PhishingSecurityTest(Datacls):
     campaign_id: int
     pst_id: int
     status: str
@@ -465,7 +361,7 @@ class PhishingSecurityTest:
                     groups.append(API.GROUP_CACHE[group])
                 else:
                     if group != 0:
-                        group_obj = Group.from_json(api.request(method="GET", url=f'groups/{group_id}')[0])
+                        group_obj = Group.from_dict(api.request(method="GET", url=f'groups/{group_id}')[0])
                         groups.append(group_obj)
                         API.GROUP_CACHE[group_id] = group_obj
                     else:
@@ -476,44 +372,16 @@ class PhishingSecurityTest:
                     groups.append(API.GROUP_CACHE[group_id])
                 else:
                     if group_id != 0:
-                        group_obj = Group.from_json(api.request(method="GET", url=f'groups/{group_id}')[0])
+                        group_obj = Group.from_dict(api.request(method="GET", url=f'groups/{group_id}')[0])
                         groups.append(group_obj)
                         API.GROUP_CACHE[group_id] = group_obj
                     else:
                         pass
         return groups
 
-    @classmethod
-    def from_json(cls, obj):
-        return cls(
-            campaign_id=obj.get('campaign_id'),
-            pst_id=obj.get('pst_id'),
-            status=obj.get('status'),
-            name=obj.get('name'),
-            groups=obj.get('groups'),
-            phish_prone_percentage=obj.get('phish_prone_percentage'),
-            started_at=obj.get('started_at'),
-            duration=obj.get('duration'),
-            categories=obj.get('categories'),
-            template=obj.get('template'),
-            landing=obj.get('landing'),
-            scheduled_count=obj.get('scheduled_count'),
-            delivered_count=obj.get('delivered_count'),
-            opened_count=obj.get('opened_count'),
-            clicked_count=obj.get('clicked_count'),
-            replied_count=obj.get('replied_count'),
-            attachment_open_count=obj.get('attachment_open_count'),
-            macro_enabled_count=obj.get('macro_enabled_count'),
-            data_entered_count=obj.get('data_entered_count'),
-            vulnerable_plugin_count=obj.get('vulnerable_plugin_count'),
-            exploited_count=obj.get('exploited_count'),
-            reported_count=obj.get('reported_count'),
-            bounced_count=obj.get('bounced_count'),
-            )
-
 
 @dataclass()
-class PhishingCampaign:
+class PhishingCampaign(Datacls):
     campaign_id: int
     name: str
     groups: list = field(init=True)
@@ -547,7 +415,7 @@ class PhishingCampaign:
                     groups.append(API.GROUP_CACHE[group])
                 else:
                     if group != 0:
-                        group_obj = Group.from_json(api.request(method="GET", url=f'groups/{group_id}')[0])
+                        group_obj = Group.from_dict(api.request(method="GET", url=f'groups/{group_id}')[0])
                         groups.append(group_obj)
                         API.GROUP_CACHE[group_id] = group_obj
                     else:
@@ -558,7 +426,7 @@ class PhishingCampaign:
                     groups.append(API.GROUP_CACHE[group_id])
                 else:
                     if group_id != 0:
-                        group_obj = Group.from_json(api.request(method="GET", url=f'groups/{group_id}')[0])
+                        group_obj = Group.from_dict(api.request(method="GET", url=f'groups/{group_id}')[0])
                         groups.append(group_obj)
                         API.GROUP_CACHE[group_id] = group_obj
                     else:
@@ -580,7 +448,7 @@ class PhishingCampaign:
                     psts.append(API.GROUP_CACHE[pst])
                 else:
                     if pst != 0:
-                        pst_obj = PhishingSecurityTest.from_json(
+                        pst_obj = PhishingSecurityTest.from_dict(
                             api.request(method="GET", url=f'phishing/security_tests/{pst}')[0])
                         psts.append(pst_obj)
                         API.PSTS_CACHE[pst_id] = pst_obj
@@ -593,7 +461,7 @@ class PhishingCampaign:
                     psts.append(API.PSTS_CACHE[pst_id])
                 else:
                     if pst_id != 0:
-                        psts_obj = PhishingSecurityTest.from_json(
+                        psts_obj = PhishingSecurityTest.from_dict(
                             api.request(method="GET", url=f'phishing/security_tests/{pst.get("pst_id")}')[0])
                         psts.append(psts_obj)
                         API.PSTS_CACHE[pst_id] = psts_obj
@@ -601,28 +469,9 @@ class PhishingCampaign:
                         pass
         return psts
 
-    @classmethod
-    def from_json(cls, obj):
-        return cls(
-            campaign_id=obj.get('campaign_id'),
-            name=obj.get('name'),
-            groups=obj.get('groups'),
-            last_phish_prone_percentage=obj.get('last_phish_prone_percentage'),
-            last_run=obj.get('last_run'),
-            status=obj.get('status'),
-            hidden=obj.get('hidden'),
-            send_duration=obj.get('send_duration'),
-            track_duration=obj.get('track_duration'),
-            frequency=obj.get('frequency'),
-            difficulty_filter=obj.get('difficulty_filter'),
-            create_date=obj.get('create_date'),
-            psts=obj.get('psts'),
-            psts_count=obj.get('psts_count')
-            )
-
 
 @dataclass()
-class PhishingCampaignRecipient:
+class PhishingCampaignRecipient(Datacls):
     recipient_id: int
     pst_id: int
     user: dict = field(init=True)
@@ -662,7 +511,7 @@ class PhishingCampaignRecipient:
                     groups.append(API.GROUP_CACHE[group])
                 else:
                     if group != 0:
-                        group_obj = Group.from_json(api.request(method="GET", url=f'groups/{group_id}')[0])
+                        group_obj = Group.from_dict(api.request(method="GET", url=f'groups/{group_id}')[0])
                         groups.append(group_obj)
                         API.GROUP_CACHE[group_id] = group_obj
                     else:
@@ -673,35 +522,9 @@ class PhishingCampaignRecipient:
                     groups.append(API.GROUP_CACHE[group_id])
                 else:
                     if group_id != 0:
-                        group_obj = Group.from_json(api.request(method="GET", url=f'groups/{group_id}')[0])
+                        group_obj = Group.from_dict(api.request(method="GET", url=f'groups/{group_id}')[0])
                         groups.append(group_obj)
                         API.GROUP_CACHE[group_id] = group_obj
                     else:
                         pass
         return groups
-
-    @classmethod
-    def from_json(cls, obj):
-        return cls(
-            recipient_id=obj.get('recipient_id'),
-            user=obj.get('user'),
-            pst_id=obj.get('pst_id'),
-            template=obj.get('template'),
-            scheduled_at=obj.get('scheduled_at'),
-            delivered_at=obj.get('delivered_at'),
-            opened_at=obj.get('opened_at'),
-            clicked_at=obj.get('clicked_at'),
-            replied_at=obj.get('replied_at'),
-            attachment_opened_at=obj.get('attachment_opened_at'),
-            macro_enabled_at=obj.get('macro_enabled_at'),
-            data_entered_at=obj.get('data_entered_at'),
-            vulnerable_plugins_at=obj.get('vulnerable_plugins_at'),
-            exploited_at=obj.get('exploited_at'),
-            reported_at=obj.get('reported_at'),
-            bounced_at=obj.get('bounced_at'),
-            ip=obj.get('ip'),
-            ip_location=obj.get('ip_location'),
-            browser=obj.get('browser'),
-            browser_version=obj.get('browser_version'),
-            os=obj.get('os')
-            )
