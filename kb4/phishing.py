@@ -7,14 +7,14 @@ class Phishing(API):
         super().__init__()
         self.domain = f'{self.domain}/phishing'
 
-    def get_campaigns(self, campaign_id: int = None) -> (list, dict):
+    def get_campaigns(self, campaign_id: int = None) -> list:
 
         """Retrieves all phishing campaigns (or a specific phishing campaign if a campaign_id is
         provided) in your KnowBe4 account.
 
         :parameter campaign_id: an int, a phishing campaign ID to filter on
-        :return: a list or a dict, API response(s)
-        :rtype: (list, dict)
+        :return: a list, API response(s)
+        :rtype: list
         """
 
         # Get a Specific Phishing Campaign:
@@ -27,15 +27,15 @@ class Phishing(API):
         else:
             return self.request(method="GET", url=f'campaigns')
 
-    def get_security_tests(self, campaign_id: int = None, phishing_security_test_id: int = None) -> (list, dict):
+    def get_security_tests(self, campaign_id: int = None, phishing_security_test_id: int = None) -> list:
 
         """Retrieves all phishing security tests (or a phishing security test from a specific campaign if a
         campaign_id is provided) in your KnowBe4 account.
 
         :parameter campaign_id: an int, a security test campaign ID to filter on
         :parameter phishing_security_test_id: an int, a phishing security test ID to filter on
-        :return: a list or a dict, API response(s)
-        :rtype: (list, dict)
+        :return: a list, API response(s)
+        :rtype: list
         """
 
         if campaign_id and phishing_security_test_id:
@@ -56,15 +56,15 @@ class Phishing(API):
         else:
             return self.request(method="GET", url=f'security_tests')
 
-    def get_security_test_results(self, phishing_security_test_id: int = None, recipient_id: int = None) -> dict:
+    def get_security_test_results(self, phishing_security_test_id: int = None, recipient_id: int = None) -> list:
 
         """Retrieves all recipients (or a specific recipient if a user_id is provided) from a phishing security test in
         your KnowBe4 account.
 
         :parameter phishing_security_test_id: an int, a phishing security test ID to filter on
         :parameter recipient_id: an int, a recipient ID to filter on
-        :return: a list or a dict, API response(s)
-        :rtype: (list, dict)
+        :return: a list, API response(s)
+        :rtype: list
         """
 
         if not phishing_security_test_id:

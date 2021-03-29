@@ -7,14 +7,14 @@ class Training(API):
         super().__init__()
         self.domain = f'{self.domain}/training'
 
-    def get_store_purchases(self, store_purchase_id: int = None) -> (list, dict):
+    def get_store_purchases(self, store_purchase_id: int = None) -> list:
 
         """Retrieves all store purchases (or a specific purchase if a store_purchase_id is provided) in your KnowBe4
         account.
 
         :parameter store_purchase_id: an int, a store purchase ID to filter on
-        :return: a list or a dict, API response(s)
-        :rtype: (list, dict)
+        :return: a list, API response(s)
+        :rtype: list
         """
 
         # Get a Specific Store Purchase:
@@ -27,13 +27,13 @@ class Training(API):
         else:
             return self.request(method="GET", url=f'store_purchases')
 
-    def get_policies(self, policy_id: int = None) -> (list, dict):
+    def get_policies(self, policy_id: int = None) -> list:
 
         """Retrieves all policies (or a specific policy if a policy_id is provided) in your KnowBe4 account.
 
         :parameter policy_id: an int, a policy ID to filter on
-        :return: a list or a dict, API response(s)
-        :rtype: (list, dict)
+        :return: a list, API response(s)
+        :rtype: list
         """
 
         # Get a Specific Policy:
@@ -46,14 +46,14 @@ class Training(API):
         else:
             return self.request(method="GET", url=f'policies')
 
-    def get_campaigns(self, campaign_id: int = None) -> (list, dict):
+    def get_campaigns(self, campaign_id: int = None) -> list:
 
         """Retrieves all training campaigns (or a specific training campaign if a campaign_id is provided) in your
         KnowBe4 account.
 
         :parameter campaign_id: an int, a training campaign ID to filter on
-        :return: a list or a dict, API response(s)
-        :rtype: (list, dict)
+        :return: a list, API response(s)
+        :rtype: list
         """
 
         # Get a Specific Training Campaign:
@@ -67,7 +67,7 @@ class Training(API):
             return self.request(method="GET", url=f'campaigns')
 
     def get_enrollments(self, enrollment_id: int = None, store_purchase_id: int = None,
-                        campaign_id: int = None, user_id: int = None) -> (list, dict):
+                        campaign_id: int = None, user_id: int = None) -> list:
 
         """Retrieves all training enrollments (or a specific training enrollment if a enrollment_id is provided) in
         your KnowBe4 account.
@@ -76,8 +76,8 @@ class Training(API):
         :parameter store_purchase_id: an int, a store purchase ID to filter on
         :parameter campaign_id: an int, a training campaign ID to filter on
         :parameter user_id: an int, a user ID to filter on
-        :return: a list or a dict, API response(s)
-        :rtype: (list, dict)
+        :return: a list, API response(s)
+        :rtype: list
         """
 
         params = {}

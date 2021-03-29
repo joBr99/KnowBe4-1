@@ -7,8 +7,7 @@ class Users(API):
         super().__init__()
         self.domain = f'{self.domain}/users'
 
-    def get(self, status: str = 'active', group_id: int = None, user_id: int = None, expand: bool = False) -> (list,
-                                                                                                               dict):
+    def get(self, status: str = 'active', group_id: int = None, user_id: int = None, expand: bool = False) -> list:
 
         """Retrieves all users (or a specific user if a user_id is provided) in your KnowBe4 account
 
@@ -16,8 +15,8 @@ class Users(API):
         :parameter group_id: a str, A group ID to filter on
         :parameter user_id: an int, A user ID to filter on
         :parameter expand: a bool, If true, expands groups to provide additional details [Default = False]
-        :return: a list or a dict, API response(s)
-        :rtype: (list, dict)
+        :return: a list, API response(s)
+        :rtype: list
         """
 
         params = {}

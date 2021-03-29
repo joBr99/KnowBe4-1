@@ -7,14 +7,14 @@ class Groups(API):
         super().__init__()
         self.domain = f'{self.domain}/groups'
 
-    def get(self, status: str = 'active', group_id: int = None, ) -> (list, dict):
+    def get(self, status: str = 'active', group_id: int = None, ) -> list:
 
         """Retrieves all groups (or a specific group if a group_id is provided) in your KnowBe4 account
 
         :parameter status: a str, Filter results based on status (active / archived) [Default = active]
         :parameter group_id: a str, A group ID to filter on
-        :return: a list or a dict, API response(s)
-        :rtype: (list, dict)
+        :return: a list, API response(s)
+        :rtype: list
         """
 
         params = {}
