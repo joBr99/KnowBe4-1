@@ -5,7 +5,7 @@ class Account(API):
 
     def __init__(self):
         super().__init__()
-        self.domain = f'{self.domain}/account'
+        self._domain = f'{self._domain}/account'
 
     def get_information(self, full: bool = False) -> dict:
 
@@ -23,7 +23,7 @@ class Account(API):
         if full:
             params.update({'full': 'true'})
 
-        return self.request(method="GET", url="")
+        return self._request(method="GET", url="")
 
     def admins(self) -> list:
 
@@ -33,6 +33,6 @@ class Account(API):
         :rtype: list
         """
 
-        response = self.request(method="GET", url="")
+        response = self._request(method="GET", url="")[0]
 
         return response.get('admins')

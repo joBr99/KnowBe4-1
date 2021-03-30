@@ -1,11 +1,11 @@
-from .api import API
+from .api import API, User
 
 
 class Users(API):
 
     def __init__(self):
         super().__init__()
-        self.domain = f'{self.domain}/users'
+        self._domain = f'{self._domain}/users'
 
     def get(self, status: str = 'active', group_id: int = None, user_id: int = None, expand: bool = False) -> list:
 
@@ -24,7 +24,7 @@ class Users(API):
         # Get a Specific User
         # https://developer.knowbe4.com/reporting/#tag/Users/paths/~1v1~1users~1{user_id}/get
         if user_id:
-            return self.request(method="GET", url=f'{user_id}')
+            return [User.from_dict(user) for user in self._request(method="GET", url=f'{user_id}')]
 
         # Get All Users:
         # https://developer.knowbe4.com/reporting/#tag/Users/paths/~1v1~1users/get
@@ -42,4 +42,4 @@ class Users(API):
             if expand:
                 params.update({'expand': 'group'})
 
-            return self.request(method="GET", url="", params=params)
+            return [User.from_dict(user) for user in self._request(method="GET", url="", params=params)]

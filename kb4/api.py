@@ -4,51 +4,51 @@ import requests
 from dataclasses import dataclass, field, asdict
 from .exceptions import AuthorizationError
 
+_GROUP_CACHE = {}
+_PSTS_CACHE = {}
+
 
 class API:
 
-    GROUP_CACHE = {}
-    PSTS_CACHE = {}
-
     def __init__(self):
-        self.authToken = os.environ.get("kb4-api-key")
-        self.domain = "https://us.api.knowbe4.com/v1"
-        self.results_per_page = 500
+        self._authToken = os.environ.get("kb4-api-key")
+        self._domain = "https://us.api.knowbe4.com/v1"
+        self._results_per_page = 500
 
-    def build_url(self, endpoint: str) -> str:
-        return f'{self.domain}/{endpoint}'
+    def _build_url(self, endpoint: str) -> str:
+        return f'{self._domain}/{endpoint}'
 
-    def verify_auth_token(self):
-        if not self.authToken:
+    def _verify_auth_token(self):
+        if not self._authToken:
             api_token = input('Please enter your KnowBe4 API Token: ')
             print("Note: You may be prompted for you API token everytime you call the KB4 class until you reboot your "
                   "system.")
             os.environ['kb4-api-key'] = api_token
-            self.authToken = api_token
+            self._authToken = api_token
 
-    def set_headers(self):
-        return {'Authorization': self.authToken}
+    def _set_headers(self):
+        return {'Authorization': self._authToken}
 
-    def set_params(self, page: int = 1):
-        return {'page': page, 'per_page': self.results_per_page}
+    def _set_params(self, page: int = 1):
+        return {'page': page, 'per_page': self._results_per_page}
 
     @staticmethod
-    def json(response):
+    def _json(response):
         if not response:
             return None
         else:
             return response.json()
 
-    def request(self, method: str, url: str, params: dict = None, json: dict = None, headers: dict = None):
+    def _request(self, method: str, url: str, params: dict = None, json: dict = None, headers: dict = None):
 
-        parameters = self.set_params()
+        parameters = self._set_params()
 
         if params:
             parameters.update(params)
 
-        self.verify_auth_token()
-        headers = self.set_headers()
-        url = self.build_url(url)
+        self._verify_auth_token()
+        headers = self._set_headers()
+        url = self._build_url(url)
 
         results = []
 
@@ -94,15 +94,16 @@ class API:
                     api_requests += 1
 
                     # Extract JSON from response and append values to results
-                    response = self.json(response)
+                    response = self._json(response)
 
                     if isinstance(response, list):
                         results.extend(response)
                     elif isinstance(response, dict):
                         results.append(response)
 
-                    if len(response) != self.results_per_page:
+                    if len(response) != self._results_per_page:
                         has_next, terminate = False, True
+
                     else:
                         has_next = True
                         parameters['page'] += 1
@@ -221,24 +222,24 @@ class TrainingCampaign(Datacls):
 
             if isinstance(group, int):
                 group_id = group
-                if group in API.GROUP_CACHE:
-                    groups.append(API.GROUP_CACHE[group])
+                if group in _GROUP_CACHE:
+                    groups.append(_GROUP_CACHE[group])
                 else:
                     if group != 0:
-                        group_obj = Group.from_dict(api.request(method="GET", url=f'groups/{group_id}')[0])
+                        group_obj = Group.from_dict(api._request(method="GET", url=f'groups/{group_id}')[0])
                         groups.append(group_obj)
-                        API.GROUP_CACHE[group_id] = group_obj
+                        _GROUP_CACHE[group_id] = group_obj
                     else:
                         pass
             elif isinstance(group, dict):
                 group_id = group.get("group_id")
-                if group_id in API.GROUP_CACHE:
-                    groups.append(API.GROUP_CACHE[group_id])
+                if group_id in _GROUP_CACHE:
+                    groups.append(_GROUP_CACHE[group_id])
                 else:
                     if group_id != 0:
-                        group_obj = Group.from_dict(api.request(method="GET", url=f'groups/{group_id}')[0])
+                        group_obj = Group.from_dict(api._request(method="GET", url=f'groups/{group_id}')[0])
                         groups.append(group_obj)
-                        API.GROUP_CACHE[group_id] = group_obj
+                        _GROUP_CACHE[group_id] = group_obj
                     else:
                         pass
         return groups
@@ -295,24 +296,24 @@ class User(Datacls):
 
             if isinstance(group, int):
                 group_id = group
-                if group in API.GROUP_CACHE:
-                    groups.append(API.GROUP_CACHE[group])
+                if group in _GROUP_CACHE:
+                    groups.append(_GROUP_CACHE[group])
                 else:
                     if group != 0:
-                        group_obj = Group.from_dict(api.request(method="GET", url=f'groups/{group_id}')[0])
+                        group_obj = Group.from_dict(api._request(method="GET", url=f'groups/{group_id}')[0])
                         groups.append(group_obj)
-                        API.GROUP_CACHE[group_id] = group_obj
+                        _GROUP_CACHE[group_id] = group_obj
                     else:
                         pass
             elif isinstance(group, dict):
                 group_id = group.get("group_id")
-                if group_id in API.GROUP_CACHE:
-                    groups.append(API.GROUP_CACHE[group_id])
+                if group_id in _GROUP_CACHE:
+                    groups.append(_GROUP_CACHE[group_id])
                 else:
                     if group_id != 0:
-                        group_obj = Group.from_dict(api.request(method="GET", url=f'groups/{group_id}')[0])
+                        group_obj = Group.from_dict(api._request(method="GET", url=f'groups/{group_id}')[0])
                         groups.append(group_obj)
-                        API.GROUP_CACHE[group_id] = group_obj
+                        _GROUP_CACHE[group_id] = group_obj
                     else:
                         pass
         return groups
@@ -330,7 +331,7 @@ class PhishingSecurityTest(Datacls):
     duration: int
     categories: list
     template: dict
-    landing: dict
+    landing_page: dict
     scheduled_count: int
     delivered_count: int
     opened_count: int
@@ -357,24 +358,24 @@ class PhishingSecurityTest(Datacls):
 
             if isinstance(group, int):
                 group_id = group
-                if group in API.GROUP_CACHE:
-                    groups.append(API.GROUP_CACHE[group])
+                if group in _GROUP_CACHE:
+                    groups.append(_GROUP_CACHE[group])
                 else:
                     if group != 0:
-                        group_obj = Group.from_dict(api.request(method="GET", url=f'groups/{group_id}')[0])
+                        group_obj = Group.from_dict(api._request(method="GET", url=f'groups/{group_id}')[0])
                         groups.append(group_obj)
-                        API.GROUP_CACHE[group_id] = group_obj
+                        _GROUP_CACHE[group_id] = group_obj
                     else:
                         pass
             elif isinstance(group, dict):
                 group_id = group.get("group_id")
-                if group_id in API.GROUP_CACHE:
-                    groups.append(API.GROUP_CACHE[group_id])
+                if group_id in _GROUP_CACHE:
+                    groups.append(_GROUP_CACHE[group_id])
                 else:
                     if group_id != 0:
-                        group_obj = Group.from_dict(api.request(method="GET", url=f'groups/{group_id}')[0])
+                        group_obj = Group.from_dict(api._request(method="GET", url=f'groups/{group_id}')[0])
                         groups.append(group_obj)
-                        API.GROUP_CACHE[group_id] = group_obj
+                        _GROUP_CACHE[group_id] = group_obj
                     else:
                         pass
         return groups
@@ -411,24 +412,24 @@ class PhishingCampaign(Datacls):
 
             if isinstance(group, int):
                 group_id = group
-                if group in API.GROUP_CACHE:
-                    groups.append(API.GROUP_CACHE[group])
+                if group in _GROUP_CACHE:
+                    groups.append(_GROUP_CACHE[group])
                 else:
                     if group != 0:
-                        group_obj = Group.from_dict(api.request(method="GET", url=f'groups/{group_id}')[0])
+                        group_obj = Group.from_dict(api._request(method="GET", url=f'groups/{group_id}')[0])
                         groups.append(group_obj)
-                        API.GROUP_CACHE[group_id] = group_obj
+                        _GROUP_CACHE[group_id] = group_obj
                     else:
                         pass
             elif isinstance(group, dict):
                 group_id = group.get("group_id")
-                if group_id in API.GROUP_CACHE:
-                    groups.append(API.GROUP_CACHE[group_id])
+                if group_id in _GROUP_CACHE:
+                    groups.append(_GROUP_CACHE[group_id])
                 else:
                     if group_id != 0:
-                        group_obj = Group.from_dict(api.request(method="GET", url=f'groups/{group_id}')[0])
+                        group_obj = Group.from_dict(api._request(method="GET", url=f'groups/{group_id}')[0])
                         groups.append(group_obj)
-                        API.GROUP_CACHE[group_id] = group_obj
+                        _GROUP_CACHE[group_id] = group_obj
                     else:
                         pass
         return groups
@@ -443,28 +444,28 @@ class PhishingCampaign(Datacls):
 
             if isinstance(pst, int):
                 pst_id = pst
-                if pst in API.PSTS_CACHE:
+                if pst in _PSTS_CACHE:
                     print("PST found in CACHE")
-                    psts.append(API.GROUP_CACHE[pst])
+                    psts.append(_GROUP_CACHE[pst])
                 else:
                     if pst != 0:
                         pst_obj = PhishingSecurityTest.from_dict(
-                            api.request(method="GET", url=f'phishing/security_tests/{pst}')[0])
+                            api._request(method="GET", url=f'phishing/security_tests/{pst}')[0])
                         psts.append(pst_obj)
-                        API.PSTS_CACHE[pst_id] = pst_obj
+                        _PSTS_CACHE[pst_id] = pst_obj
                     else:
                         pass
             elif isinstance(pst, dict):
                 pst_id = pst.get("pst_id")
-                if pst_id in API.PSTS_CACHE:
+                if pst_id in _PSTS_CACHE:
                     print("PST found in CACHE")
-                    psts.append(API.PSTS_CACHE[pst_id])
+                    psts.append(_PSTS_CACHE[pst_id])
                 else:
                     if pst_id != 0:
                         psts_obj = PhishingSecurityTest.from_dict(
-                            api.request(method="GET", url=f'phishing/security_tests/{pst.get("pst_id")}')[0])
+                            api._request(method="GET", url=f'phishing/security_tests/{pst.get("pst_id")}')[0])
                         psts.append(psts_obj)
-                        API.PSTS_CACHE[pst_id] = psts_obj
+                        _PSTS_CACHE[pst_id] = psts_obj
                     else:
                         pass
         return psts
@@ -493,38 +494,3 @@ class PhishingCampaignRecipient(Datacls):
     browser: str
     browser_version: str
     os: str
-
-    def __post_init__(self):
-        self.groups = self.set_groups()
-
-    def set_groups(self):
-
-        api = API()
-
-        groups = []
-
-        for group in self.groups:
-
-            if isinstance(group, int):
-                group_id = group
-                if group in API.GROUP_CACHE:
-                    groups.append(API.GROUP_CACHE[group])
-                else:
-                    if group != 0:
-                        group_obj = Group.from_dict(api.request(method="GET", url=f'groups/{group_id}')[0])
-                        groups.append(group_obj)
-                        API.GROUP_CACHE[group_id] = group_obj
-                    else:
-                        pass
-            elif isinstance(group, dict):
-                group_id = group.get("group_id")
-                if group_id in API.GROUP_CACHE:
-                    groups.append(API.GROUP_CACHE[group_id])
-                else:
-                    if group_id != 0:
-                        group_obj = Group.from_dict(api.request(method="GET", url=f'groups/{group_id}')[0])
-                        groups.append(group_obj)
-                        API.GROUP_CACHE[group_id] = group_obj
-                    else:
-                        pass
-        return groups

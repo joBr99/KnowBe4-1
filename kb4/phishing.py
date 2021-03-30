@@ -1,11 +1,11 @@
-from .api import API
+from .api import API, PhishingCampaign, PhishingSecurityTest, PhishingCampaignRecipient
 
 
 class Phishing(API):
 
     def __init__(self):
         super().__init__()
-        self.domain = f'{self.domain}/phishing'
+        self._domain = f'{self._domain}/phishing'
 
     def get_campaigns(self, campaign_id: int = None) -> list:
 
@@ -20,12 +20,14 @@ class Phishing(API):
         # Get a Specific Phishing Campaign:
         # https://developer.knowbe4.com/reporting/#tag/Phishing/paths/~1v1~1phishing~1campaigns~1{campaign_id}/get
         if campaign_id:
-            return self.request(method="GET", url=f'campaigns/{campaign_id}')
+            return [PhishingCampaign.from_dict(phishing_campaign)
+                    for phishing_campaign in self._request(method="GET", url=f'campaigns/{campaign_id}')]
 
         # Get All Phishing Campaigns:
         # https://developer.knowbe4.com/reporting/#tag/Phishing/paths/~1v1~1phishing~1campaigns/get
         else:
-            return self.request(method="GET", url=f'campaigns')
+            return [PhishingCampaign.from_dict(phishing_campaign)
+                    for phishing_campaign in self._request(method="GET", url=f'campaigns')]
 
     def get_security_tests(self, campaign_id: int = None, phishing_security_test_id: int = None) -> list:
 
@@ -44,17 +46,20 @@ class Phishing(API):
         # Get a Phishing Security Test From a Specific Campaign:
         # https://developer.knowbe4.com/reporting/#tag/Phishing/paths/~1v1~1phishing~1campaigns~1{campaign_id}~1security_tests/get
         if campaign_id:
-            return self.request(method="GET", url=f'campaigns/{campaign_id}/security_tests')
+            return [PhishingSecurityTest.from_dict(pst)
+                    for pst in self._request(method="GET", url=f'campaigns/{campaign_id}/security_tests')]
 
         # Get a Specific PST
         # https://developer.knowbe4.com/reporting/#tag/Phishing/paths/~1v1~1phishing~1security_tests~1{pst_id}/get
         elif phishing_security_test_id:
-            return self.request(method="GET", url=f'security_tests/{phishing_security_test_id}')
+            return [PhishingSecurityTest.from_dict(pst)
+                    for pst in self._request(method="GET", url=f'security_tests/{phishing_security_test_id}')]
 
         # Get All Phishing Security Tests:
         # https://developer.knowbe4.com/reporting/#tag/Phishing/paths/~1v1~1phishing~1security_tests/get
         else:
-            return self.request(method="GET", url=f'security_tests')
+            return [PhishingSecurityTest.from_dict(pst)
+                    for pst in self._request(method="GET", url=f'security_tests')]
 
     def get_security_test_results(self, phishing_security_test_id: int = None, recipient_id: int = None) -> list:
 
@@ -73,10 +78,11 @@ class Phishing(API):
         # Get a Specific Recipient's Results
         # https://developer.knowbe4.com/reporting/#tag/Phishing/paths/~1v1~1phishing~1security_tests~1{pst_id}~1recipients~1{recipient_id}/get
         if recipient_id:
-            return self.request(
-                method="GET", url=f'security_tests/{phishing_security_test_id}/recipients/{recipient_id}')
+            return [PhishingCampaignRecipient.from_dict(pcr)
+                    for pcr in self._request(method="GET", url=f'security_tests/{phishing_security_test_id}/recipients/{recipient_id}')]
 
         # Get All Recipient Results
         # https://developer.knowbe4.com/reporting/#tag/Phishing/paths/~1v1~1phishing~1security_tests~1{pst_id}~1recipients/get
         else:
-            return self.request(method="GET", url=f'security_tests/{phishing_security_test_id}/recipients')
+            return [PhishingCampaignRecipient.from_dict(pcr) for pcr
+                    in self._request(method="GET", url=f'security_tests/{phishing_security_test_id}/recipients')]
