@@ -1,5 +1,4 @@
 import os
-import time
 import requests
 from dataclasses import dataclass, field, asdict
 from .exceptions import AuthorizationError
